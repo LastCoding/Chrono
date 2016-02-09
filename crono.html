@@ -1,0 +1,194 @@
+<!doctype html>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="style.css">
+<meta charset="UTF-8">
+<meta name="description" content="Cronometre">
+<meta name="keywords" content="HTML,CSS,JavaScript">
+<meta name="author" content="Iñaki Marzo">
+</head>
+
+<body>
+
+
+</div>
+<img src="images/crono.png" id="cronoimg"> </img>
+
+
+<script type="text/javascript">
+
+var compr = false;
+var startTime = 0;
+var start = 0;
+var end = 0;
+var difference = 0;
+var timerID = 0;
+var marca;
+
+var datos = [];
+var num = 0;
+var compr2 = false;
+var numMarcas = 0;
+var clicks = 1;
+var overwrite = false;
+
+function chrono(){
+
+	end = new Date();
+	difference = end - start;
+	difference = new Date(difference);
+	var msec = difference.getMilliseconds();
+	var sec = difference.getSeconds();
+	var min = difference.getMinutes();
+	var hours = difference.getHours()-1;
+	if (min < 10){
+		min = "0" + min;
+	}
+	if (sec < 10){
+		sec = "0" + sec;
+	}
+	if(msec < 10){
+		msec = "00" +msec;
+	}
+	else if(msec < 100){
+		msec = "0" +msec;
+	}
+	document.getElementById("chronotime").innerHTML = hours + ":" + min + ":" + sec + ":" + msec;
+	marca = document.getElementById("chronotime").innerHTML = hours + ":" + min + ":" + sec + ":" + msec;
+	timerID = setTimeout("chrono()", 10);
+}
+
+function chronoStart(){
+	document.chronoForm.startstop.value = "Pause";
+	document.chronoForm.startstop.onclick = chronoPause;
+	document.chronoForm.reset.onclick = chronoReset;
+	start = new Date();
+	document.getElementById("marcas").innerHTML = "";
+	compr = true;
+	compr2 = true;
+	chrono();
+}
+
+function chronoContinue(){
+	document.chronoForm.startstop.value = "Pause";
+	document.chronoForm.startstop.onclick = chronoPause;
+	document.chronoForm.reset.onclick = chronoReset;
+	start = new Date()-difference;
+	start = new Date(start);
+	compr2 = true;
+	chrono();
+}
+
+function chronoReset(){
+	document.getElementById("chronotime").innerHTML = "0:00:00:000";
+	start = new Date();
+}
+
+function chronoStopReset(){
+	document.chronoForm.startstop.value = "Start";
+	document.getElementById("chronotime").innerHTML = "0:00:00:000";
+	document.chronoForm.startstop.onclick = chronoStart;
+	document.getElementById("marcas").innerHTML = "<br>" + "Se han borrado tus marcas";
+	numMarcas = 0;
+	compr = false;
+}
+
+
+function chronoPause(){
+	document.chronoForm.startstop.value = "Continue";
+	document.chronoForm.startstop.onclick = chronoContinue;
+	document.chronoForm.reset.onclick = chronoStopReset;
+	clearTimeout(timerID);
+}
+
+function showMarks() {
+
+	if (numMarcas <= 14){
+		if (numMarcas >= 1) document.chronoForm.deletemarks.value="Borrar marcas";
+	if (compr) {
+		for (var i = 0; i < datos.length; i++) {
+			if (datos[i] == marca) {
+				alert("Ya has guardado esta marca.");
+				compr2 = false;
+		}
+		}
+		if (compr2) {
+		datos[num] = marca;
+			if (overwrite){
+				document.getElementById("marcas").innerHTML = "<br>" + marca + "<br>";
+				num = 1;
+				numMarcas = 1;
+				document.chronoForm.deletemarks.value="Borrar marca";
+			} else {
+			document.getElementById("marcas").innerHTML += "<br>" + marca + "<br>";
+			num++;
+			numMarcas++;
+			}}
+		
+
+
+	} else alert("No se pueden guardar marcas con el contador a 0");
+	} else alert("No se permiten guardar más marcas, puede hacer un reset del contador para guardar más, o puede darle click a borrar marcas y seguir guardando sus marcas.");
+}
+
+function deleteMarks() {
+	document.chronoForm.deletemarks.value="Borrar marca";
+	document.getElementById("marcas").innerHTML = "<br>" + "";
+	alert("Has borrado tus marcas.");
+	numMarcas = 0;
+}
+
+
+function overwriteMarks() {
+	clicks++;
+	if (clicks % 2 == 0) { // si es par
+		document.chronoForm.overwrite.value="Sobreescribir [ON]";
+		overwrite = true;
+	} else { // si es impar
+		document.chronoForm.overwrite.value="Sobreescribir [OFF]";
+		overwrite = false;
+	}
+  
+
+}
+
+</script>
+
+<div id="cronoTime">
+<span id="chronotime">0:00:00:00</span>
+</div>
+
+<form name="chronoForm">
+
+<div id="cronoStart">
+    <input type="button" id="cronostart" name="startstop" value="Start" onclick="chronoStart()" />
+</div>
+
+<div id="cronoReset">
+    <input type="button" id="cronoreset" name="reset" value="Reset" onclick="chronoReset()" />
+</div>
+<div id="cronoMarks">
+    <input type="button" id="cronomarks" value="Guardar marca" onclick="showMarks()" />
+</div>
+
+<div id="cronoDeleteMarks">
+	<input type="button" id="cronodeletemarks" name="deletemarks" value="Borrar marca" onclick="deleteMarks()" />
+</div>
+
+<div id="overwriteMarks">
+	<input type="button" id="overwritemarks" name="overwrite" value="Sobreescribir [OFF]" onclick="overwriteMarks()" />
+</div>
+
+</form>
+</div>
+
+<div id="title">
+<h1>Marcas:</h1>
+</div>
+
+<div id="marcas">
+<br><br>
+</div>
+
+</body>
+</html>
